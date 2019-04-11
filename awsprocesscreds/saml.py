@@ -139,6 +139,8 @@ class GenericFormsBasedAuthenticator(SAMLAuthenticator):
             endpoint)
         self._fill_in_form_values(config, form_data)
         response = self._send_form_post(login_url, form_data)
+        # TODO: Check if the response contains a passcode input and
+        # handle accordingly before extracting saml assertion
         return self._extract_saml_assertion_from_response(response)
 
     def _validate_config_values(self, config):
@@ -255,8 +257,9 @@ class OktaAuthenticator(GenericFormsBasedAuthenticator):
 
 
 class ADFSFormsBasedAuthenticator(GenericFormsBasedAuthenticator):
-    USERNAME_FIELD = 'ctl00$ContentPlaceHolder1$UsernameTextBox'
-    PASSWORD_FIELD = 'ctl00$ContentPlaceHolder1$PasswordTextBox'
+    # TODO: These values need to be configurable
+    USERNAME_FIELD = 'UserName'
+    PASSWORD_FIELD = 'Password'
 
     def is_suitable(self, config):
         return (config.get('saml_authentication_type') == 'form' and
